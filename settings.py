@@ -1,0 +1,5 @@
+TTL = 255
+ALGO = "flooding"
+N, E = 100, 2000
+MIN_DIST = 1
+MAX_DIST = 100
