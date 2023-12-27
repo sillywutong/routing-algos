@@ -4,7 +4,7 @@ class Node:
 class Router(Node):
     def __init__(self, id):
         super(Router, self).__init__()
-        self.forwarding_table = dict()
+        self.forwarding_table = dict() # TODO: implement forwarding table update
         self.node_id = id
 class Host(Node):
     def __init__(self, id, ipaddress_bin, ipaddress_str):
