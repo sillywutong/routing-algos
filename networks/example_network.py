@@ -34,7 +34,7 @@ def generate_japan_network(nh):
     g.add_edge(13, 12, dist = 160)
     g.add_edge(12, 10, dist = 320)
     routers = [nodes.Router(id=_) for _ in range(14)]
-    hosts = []
+    hosts = {}
     n_bits = 32-(int(nh) & 0xFFFFFFFF).bit_length()
     prefix = random.getrandbits(n_bits) # randomly generate ip address prefix
     ip_start = (prefix << 32-n_bits)
@@ -47,8 +47,8 @@ def generate_japan_network(nh):
         #h = nodes.Host(id=host, ipaddress_bin=bytes(ipaddress))
         ip_bytes = ipaddress.to_bytes(4, 'big')
         ip_str = '.'.join([str(ip_bytes[i]) for i in range(4)])
-        h = nodes.Host(id=host, ipaddress_bin=ip_bytes, ipaddress_str = ip_str)
-        hosts.append(h)
+        h = nodes.Host(id=host, ipaddress_bin=ip_bytes, ipaddress_str = ip_str, rid=v)
+        hosts[ip_str] = h
     print(f"Graph with {14} nodes, {22} edges, {nh} hosts.")
     print(f"ip address from {ip_start_str} to {ip_str}")
     return g, routers, hosts
@@ -85,7 +85,7 @@ def generate_gaussian_network(n, nh):
     print(f"ip address from {ip_start_str} to {ip_str}")
     return g, routers, hosts
 
-_, _, hosts = generate_japan_network(257)
-for h in hosts:
-    print(h.ipaddress_str)
+#_, _, hosts = generate_japan_network(257)
+#for h in hosts:
+#    print(h.ipaddress_str)
 
