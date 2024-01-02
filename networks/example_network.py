@@ -10,7 +10,8 @@ import random
 def generate_japan_network(nh):
     # construct the JAPAN network. with nh hosts.
     g = nx.Graph()
-    g.add_nodes_from(range(14), is_host=0, id={i: i for i in range(14)})
+    g.add_nodes_from(range(14), is_host=0)
+    nx.set_node_attributes(g, {i: i for i in range(14)}, "id")
     g.add_edge(0, 1, dist = 160)
     g.add_edge(0, 2, dist = 240)
     g.add_edge(1, 3, dist = 240)
@@ -47,6 +48,7 @@ def generate_japan_network(nh):
         #h = nodes.Host(id=host, ipaddress_bin=bytes(ipaddress))
         ip_bytes = ipaddress.to_bytes(4, 'big')
         ip_str = '.'.join([str(ip_bytes[i]) for i in range(4)])
+        routers[v].connected_hosts.append(ip_str)
         h = nodes.Host(id=host, ipaddress_bin=ip_bytes, ipaddress_str = ip_str, rid=v)
         hosts[ip_str] = h
     print(f"Graph with {14} nodes, {22} edges, {nh} hosts.")

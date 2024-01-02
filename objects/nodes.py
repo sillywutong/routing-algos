@@ -6,6 +6,7 @@ class Router(Node):
         super(Router, self).__init__()
         self.forwarding_table = dict() # TODO: implement forwarding table update
         self.node_id = id
+        self.connected_hosts = []
 class Host(Node):
     def __init__(self, id, rid, ipaddress_bin, ipaddress_str):
         super(Host, self).__init__()
