@@ -1,6 +1,6 @@
 import networkx as nx
 from collections import deque
-
+from collections import defaultdict
 def flooding(source, target, graph, routers):
     # BFS with calculating the shortest path
     visited = dict() # when the node is first visited
@@ -34,9 +34,33 @@ def flooding(source, target, graph, routers):
         current_node = parent[current_node]
     route.insert(0, source)
     print('->'.join([str(u+1) for u in route]))
-    update_fwd(parents=parent, visits=visited, src=source, target=target, routers=routers)
+    children = construct_path_tree(source, parent, visited)
+    update_fwd_dfs(source, children, routers)
     return path_length
 
+def construct_path_tree(src, parents, visits):
+    children = defaultdict(list)
+    for v in visits:
+        if v == src:
+            continue
+        children[parents[v]].append(v)
+    return children
+def update_fwd_dfs(node, children, routers):
+    hosts_list = routers[node].connected_hosts
+    for h in hosts_list:
+        routers[node].forwarding_table[h] = node
+    if node not in children:
+        # leaf
+        return hosts_list
+    # not a leaf, dfs children
+    for u in children[node]:
+        h_list = update_fwd_dfs(u, children, routers)
+        for h in h_list:
+            routers[node].forwarding_table[h] = u
+        hosts_list.extend(h_list)
+    return hosts_list
+
+'''
 def update_fwd_path(parents, src, target, routers):
     current_node = target
     hosts_target = routers[target].connected_hosts
@@ -51,3 +75,4 @@ def update_fwd(parents, visits, src, target, routers):
     update_fwd_path(parents=parents, src=src, target=target, routers=routers)
     for v in visits:
         update_fwd_path(parents, src, v, routers)
+'''

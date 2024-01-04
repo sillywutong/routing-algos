@@ -44,7 +44,7 @@ def generate_japan_network(nh):
         v = random.choice(range(14))
         ipaddress = ip_start + (host - 14) # assign prefix + i as the ip address for each host
         g.add_node(host, is_host = 1, id=host)
-        g.add_edge(v, host, dist=random.randint(settings.MIN_DIST, settings.MAX_DIST))
+        g.add_edge(v, host, dist=0)
         #h = nodes.Host(id=host, ipaddress_bin=bytes(ipaddress))
         ip_bytes = ipaddress.to_bytes(4, 'big')
         ip_str = '.'.join([str(ip_bytes[i]) for i in range(4)])
@@ -66,9 +66,11 @@ def generate_gaussian_network(n, nh):
     nx.set_node_attributes(g, {i:i for i in range(n)}, "id")
     e = g.number_of_edges()
     #g.add_nodes_from(list(range(n, n+nh)), is_host = 1)
-    nx.set_edge_attributes(g, list([random.randint(settings.MIN_DIST, settings.MAX_DIST) for _ in range(n)]), "dist") # node distance
+    for e in g.edges():
+        g.edges[e]['dist'] = random.randint(settings.MIN_DIST, settings.MAX_DIST)
+    #nx.set_edge_attributes(g, list([random.randint(settings.MIN_DIST, settings.MAX_DIST) for _ in range(e)]), "dist") # node distance
     routers = [nodes.Router(id=_) for _ in range(n)] # create routers
-    hosts = []
+    hosts = {}
     n_bits = 32-(int(nh) & 0xFFFFFFFF).bit_length()
     prefix = random.getrandbits(n_bits) # randomly generate ip address prefix
     ip_start = (prefix << 32-n_bits)
@@ -77,12 +79,13 @@ def generate_gaussian_network(n, nh):
         v = random.choice(range(n))
         ipaddress = ip_start + (host - n) # assign prefix + i as the ip address for each host
         g.add_node(host, is_host = 1, id=host)
-        g.add_edge(v, host, dist=random.randint(settings.MIN_DIST, settings.MAX_DIST))
+        g.add_edge(v, host, dist=0)
         #h = nodes.Host(id=host, ipaddress_bin=bytes(ipaddress))
         ip_bytes = ipaddress.to_bytes(4, 'big')
         ip_str = '.'.join([str(ip_bytes[i]) for i in range(4)])
-        h = nodes.Host(id=host, ipaddress_bin=ip_bytes, ipaddress_str = ip_str)
-        hosts.append(h)
+        routers[v].connected_hosts.append(ip_str)
+        h = nodes.Host(id=host, ipaddress_bin=ip_bytes, ipaddress_str = ip_str, rid=v)
+        hosts[ip_str] = h
     print(f"Graph with {n} nodes, {e} edges, {nh} hosts.")
     print(f"ip address from {ip_start_str} to {ip_str}")
     return g, routers, hosts
