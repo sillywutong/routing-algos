@@ -30,13 +30,13 @@ def flooding(source, target, graph, routers):
     route = []
     current_node = target
     while current_node != source:
-        route.insert(0, current_node)
+        route.insert(0, current_node+1)
         current_node = parent[current_node]
-    route.insert(0, source)
+    route.insert(0, source+1)
     print('->'.join([str(u+1) for u in route]))
     children = construct_path_tree(source, parent, visited)
     update_fwd_dfs(source, children, routers)
-    return path_length
+    return path_length, route
 
 def construct_path_tree(src, parents, visits):
     children = defaultdict(list)

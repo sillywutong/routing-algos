@@ -1,7 +1,6 @@
 import networkx as nx
 def bellman_ford(source, target, graph):
     graph = graph.subgraph([n for n in graph.nodes() if graph.nodes[n]['is_host']==0])
-    print(graph.edges(data=True))
     # Initialize distances and predecessors
     distances = {node: float('inf') for node in graph.nodes()}
     predecessors = {node: None for node in graph.nodes()}
@@ -19,7 +18,6 @@ def bellman_ford(source, target, graph):
                 #print(distances)
 
     # Reconstruct the path
-    print(distances, predecessors)
     path = []
     current_node = target
     while current_node is not None:
